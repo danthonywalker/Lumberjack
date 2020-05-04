@@ -61,16 +61,19 @@ actual sealed class Level(
 
     actual companion object {
 
-        private val levels = mapOf(
-            None.name to None,
-            Fatal.name to Fatal,
-            Error.name to Error,
-            Warn.name to Warn,
-            Info.name to Info,
-            Debug.name to Debug,
-            Trace.name to Trace,
-            All.name to All
-        ).run { ConcurrentHashMap(this) }
+        // lazy delegation to workaround ExceptionInInitializerError
+        private val levels by lazy(LazyThreadSafetyMode.PUBLICATION) {
+            val levels = ConcurrentHashMap<String, Level>(8)
+            levels[None.name] = None
+            levels[Fatal.name] = Fatal
+            levels[Error.name] = Error
+            levels[Warn.name] = Warn
+            levels[Info.name] = Info
+            levels[Debug.name] = Debug
+            levels[Trace.name] = Trace
+            levels[All.name] = All
+            levels
+        }
 
         actual fun fromName(name: String, defaultLevel: Level): Level = (levels[name] ?: defaultLevel)
 
