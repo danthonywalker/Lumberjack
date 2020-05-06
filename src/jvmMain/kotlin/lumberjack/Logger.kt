@@ -20,7 +20,6 @@ import lumberjack.message.Message
 import org.apache.logging.log4j.LogManager
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
-import kotlin.reflect.KClass
 
 typealias Log4JLogger = org.apache.logging.log4j.Logger
 

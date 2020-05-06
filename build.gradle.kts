@@ -28,7 +28,7 @@ repositories {
 }
 
 group = "dev.neontech.lumberjack"
-version = "0.1.0"
+version = "0.2.0"
 
 fun KotlinDependencyHandler.kotlinx(simpleModuleName: String, version: String? = null): String =
     "org.jetbrains.kotlinx:kotlinx-$simpleModuleName${if (version == null) "" else ":$version"}"
@@ -72,7 +72,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "6.3"
+        gradleVersion = "6.4"
         distributionType = Wrapper.DistributionType.ALL
     }
 }

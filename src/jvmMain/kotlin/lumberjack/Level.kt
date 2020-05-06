@@ -31,7 +31,7 @@ actual sealed class Level(
     actual val value: Int
         get() = log4JLevel.intLevel()
 
-    final override fun compareTo(other: Level): Int = value.compareTo(other.value)
+    final override fun compareTo(other: Level): Int = log4JLevel.compareTo(other.log4JLevel)
 
     final override fun toString(): String = log4JLevel.toString()
 

@@ -24,7 +24,6 @@ import lumberjack.message.message
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 import kotlin.jvm.JvmName
-import kotlin.reflect.KClass
 
 expect class Logger {
 
