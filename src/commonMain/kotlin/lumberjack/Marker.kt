@@ -26,10 +26,10 @@ expect class Marker {
 
     val parents: Map<String, Marker>
 
-    companion object {
+    companion object Factory {
 
-        fun getMarker(name: String, parents: Set<Marker> = emptySet()): Marker
+        fun fromName(name: String, parents: Set<Marker> = emptySet()): Marker
     }
 }
 
-fun Marker.Companion.getMarker(name: String, vararg parents: Marker): Marker = getMarker(name, setOf(*parents))
+fun Marker.Factory.fromName(name: String, vararg parents: Marker): Marker = fromName(name, setOf(*parents))

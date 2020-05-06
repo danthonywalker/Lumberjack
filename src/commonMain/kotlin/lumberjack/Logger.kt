@@ -24,8 +24,9 @@ import lumberjack.message.message
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 import kotlin.jvm.JvmName
+import kotlin.reflect.KClass
 
-expect interface Logger {
+expect class Logger {
 
     val name: String
 
@@ -38,6 +39,11 @@ expect interface Logger {
         marker: Marker? = null,
         cause: Throwable? = null
     )
+
+    companion object Factory {
+
+        fun fromName(name: String): Logger
+    }
 }
 
 inline fun Logger.log(

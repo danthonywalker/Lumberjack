@@ -59,26 +59,28 @@ actual sealed class Level(
 
     actual class Custom internal constructor(log4JLevel: Log4JLevel) : Level(log4JLevel)
 
-    actual companion object {
+    actual companion object Factory {
 
-        // lazy delegation to workaround ExceptionInInitializerError
-        private val levels by lazy(LazyThreadSafetyMode.PUBLICATION) {
-            val levels = ConcurrentHashMap<String, Level>(8)
-            levels[None.name] = None
-            levels[Fatal.name] = Fatal
-            levels[Error.name] = Error
-            levels[Warn.name] = Warn
-            levels[Info.name] = Info
-            levels[Debug.name] = Debug
-            levels[Trace.name] = Trace
-            levels[All.name] = All
-            levels
+        private val levels = ConcurrentHashMap<Log4JLevel, Level>(8)
+
+        actual fun fromName(name: String, defaultLevel: Level): Level {
+            return fromLevel(Log4JLevel.toLevel(name, defaultLevel.log4JLevel))
         }
-
-        actual fun fromName(name: String, defaultLevel: Level): Level = (levels[name] ?: defaultLevel)
 
         actual fun toLevel(name: String, value: Int): Level = fromLevel(Log4JLevel.forName(name, value))
 
-        fun fromLevel(level: Log4JLevel): Level = levels.computeIfAbsent(level.name()) { Custom(level) }
+        fun fromLevel(level: Log4JLevel): Level = levels.computeIfAbsent(level) {
+            when (it) { // Use `it` so JVM can optimize lambda to prevent garbage
+                None.log4JLevel -> None
+                Fatal.log4JLevel -> Fatal
+                Error.log4JLevel -> Error
+                Warn.log4JLevel -> Warn
+                Info.log4JLevel -> Info
+                Debug.log4JLevel -> Debug
+                Trace.log4JLevel -> Trace
+                All.log4JLevel -> All
+                else -> Custom(it)
+            }
+        }
     }
 }

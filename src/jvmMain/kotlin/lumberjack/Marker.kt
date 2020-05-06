@@ -23,13 +23,15 @@ typealias Log4JMarker = org.apache.logging.log4j.Marker
 
 actual class Marker private constructor(
 
-    val log4JMarker: Log4JMarker,
-
-    actual val parents: Map<String, Marker>
+    val log4JMarker: Log4JMarker
 ) {
 
     actual val name: String
         get() = log4JMarker.name
+
+    actual val parents: Map<String, Marker>
+        // Implementation creates temporary `Pair` objects vs. optimal none
+        get() = log4JMarker.parents.associate { it.name to fromMarker(it) }
 
     override fun toString(): String = log4JMarker.toString()
 
@@ -39,17 +41,19 @@ actual class Marker private constructor(
 
     override fun hashCode(): Int = log4JMarker.hashCode()
 
-    actual companion object {
+    actual companion object Factory {
 
-        private val markers = ConcurrentHashMap<String, Marker>()
+        private val markers = ConcurrentHashMap<Log4JMarker, Marker>()
 
-        actual fun getMarker(name: String, parents: Set<Marker>): Marker {
-            return markers.computeIfAbsent(name) {
-                val log4JMarker = MarkerManager.getMarker(name)
+        actual fun fromName(name: String, parents: Set<Marker>): Marker {
+            return markers.computeIfAbsent(MarkerManager.getMarker(name)) {
+                // Implementation creates 3 `parents` copies vs. optimal 2
                 val log4JMarkerParents = parents.map(Marker::log4JMarker)
-                log4JMarker.setParents(*log4JMarkerParents.toTypedArray())
-                Marker(log4JMarker, parents.associateBy(Marker::name))
+                it.setParents(*log4JMarkerParents.toTypedArray())
+                Marker(it)
             }
         }
+
+        fun fromMarker(marker: Log4JMarker): Marker = markers.computeIfAbsent(marker, ::Marker)
     }
 }

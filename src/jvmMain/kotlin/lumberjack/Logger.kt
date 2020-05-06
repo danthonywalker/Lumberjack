@@ -17,17 +17,42 @@
 package lumberjack
 
 import lumberjack.message.Message
+import org.apache.logging.log4j.LogManager
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KClass
 
 typealias Log4JLogger = org.apache.logging.log4j.Logger
 
-actual interface Logger {
-
-    actual val name: String
-
-    actual val level: Level
+actual class Logger private constructor(
 
     val log4JLogger: Log4JLogger
+) {
 
-    actual fun log(level: Level, context: CoroutineContext, message: Message, marker: Marker?, cause: Throwable?)
+    actual val name: String
+        get() = log4JLogger.name
+
+    actual val level: Level
+        get() = Level.fromLevel(log4JLogger.level)
+
+    actual fun log(level: Level, context: CoroutineContext, message: Message, marker: Marker?, cause: Throwable?) {
+        log4JLogger.log(level.log4JLevel, marker?.log4JMarker, message.log4JMessage, cause) // TODO CoroutineContext
+    }
+
+    override fun toString(): String = log4JLogger.toString()
+
+    override fun equals(other: Any?): Boolean {
+        return (other as? Logger)?.log4JLogger == log4JLogger
+    }
+
+    override fun hashCode(): Int = log4JLogger.hashCode()
+
+    actual companion object Factory {
+
+        private val loggers = ConcurrentHashMap<Log4JLogger, Logger>()
+
+        actual fun fromName(name: String): Logger = fromLogger(LogManager.getLogger(name))
+
+        fun fromLogger(logger: Log4JLogger): Logger = loggers.computeIfAbsent(logger, ::Logger)
+    }
 }

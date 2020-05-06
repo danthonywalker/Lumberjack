@@ -40,7 +40,7 @@ expect sealed class Level : Comparable<Level> {
 
     class Custom : Level
 
-    companion object {
+    companion object Factory {
 
         fun fromName(name: String, defaultLevel: Level = None): Level
 
