@@ -34,7 +34,7 @@ actual class Logger private constructor(
     actual val level: Level
         get() = Level.fromLevel(log4JLogger.level)
 
-    actual fun log(level: Level, context: CoroutineContext, message: Message, marker: Marker?, cause: Throwable?) {
+    actual fun logc(level: Level, message: Message, marker: Marker?, cause: Throwable?, context: CoroutineContext) {
         log4JLogger.log(level.log4JLevel, marker?.log4JMarker, message.log4JMessage, cause) // TODO CoroutineContext
     }
 
