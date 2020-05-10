@@ -15,12 +15,17 @@
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 plugins {
     kotlin("multiplatform") version "1.3.72"
 
     id("com.github.ben-manes.versions") version "0.28.0"
+
     id("maven-publish")
+    id("com.jfrog.bintray") version "1.8.5"
 }
 
 repositories {
@@ -28,7 +33,7 @@ repositories {
 }
 
 group = "dev.neontech.lumberjack"
-version = "0.2.0"
+version = "0.3.1"
 
 fun KotlinDependencyHandler.kotlinx(simpleModuleName: String, version: String? = null): String =
     "org.jetbrains.kotlinx:kotlinx-$simpleModuleName${if (version == null) "" else ":$version"}"
@@ -52,7 +57,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 api(kotlin("stdlib"))
-                api(kotlinx("coroutines-core", "1.3.5"))
+                api(kotlinx("coroutines-core", "1.3.6"))
 
                 api("org.apache.logging.log4j:log4j-api:2.13.2")
             }
@@ -62,6 +67,43 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
             }
+        }
+    }
+}
+
+bintray {
+    user = System.getenv("BINTRAY_USER")
+    key = System.getenv("BINTRAY_KEY")
+
+    setPublications(*publishing.publications.names.toTypedArray())
+    publish = true
+
+    pkg.repo = "maven"
+    pkg.name = rootProject.name
+    pkg.userOrg = "neontech"
+    pkg.desc = "Kotlin Coroutine Multiplatform Logging Library"
+    pkg.websiteUrl = "https://lumberjack.neontech.dev"
+    pkg.issueTrackerUrl = "https://github.com/NeonTech/Lumberjack/issues"
+    pkg.vcsUrl = "https://github.com/NeonTech/Lumberjack.git"
+    pkg.setLicenses("LGPL-3.0")
+    pkg.publicDownloadNumbers = true
+
+    pkg.githubRepo = "NeonTech/Lumberjack"
+    pkg.githubReleaseNotesFile = "README.md"
+
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
+    val released = ZonedDateTime.now(ZoneOffset.UTC).format(formatter)
+
+    pkg.version.name = version.toString()
+    pkg.version.released = released
+    pkg.version.vcsTag = version.toString()
+}
+
+publishing {
+    publications.withType<MavenPublication>().apply {
+        val metadata by getting {
+            // MavenPublication instances are Named
+            artifactId = "${rootProject.name}-common"
         }
     }
 }
