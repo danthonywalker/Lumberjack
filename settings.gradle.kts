@@ -14,6 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-rootProject.name = "lumberjack"
+rootProject.name = "Lumberjack"
 
 enableFeaturePreview("GRADLE_METADATA")

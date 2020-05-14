@@ -33,7 +33,8 @@ repositories {
 }
 
 group = "dev.neontech.lumberjack"
-version = "0.3.1"
+val artifact: String = name.toLowerCase()
+version = "0.3.2"
 
 fun KotlinDependencyHandler.kotlinx(simpleModuleName: String, version: String? = null): String =
     "org.jetbrains.kotlinx:kotlinx-$simpleModuleName${if (version == null) "" else ":$version"}"
@@ -59,7 +60,7 @@ kotlin {
                 api(kotlin("stdlib"))
                 api(kotlinx("coroutines-core", "1.3.6"))
 
-                api("org.apache.logging.log4j:log4j-api:2.13.2")
+                api("org.apache.logging.log4j:log4j-api:2.13.3")
             }
         }
         val jvmTest by getting {
@@ -79,7 +80,7 @@ bintray {
     publish = true
 
     pkg.repo = "maven"
-    pkg.name = rootProject.name
+    pkg.name = artifact
     pkg.userOrg = "neontech"
     pkg.desc = "Kotlin Coroutine Multiplatform Logging Library"
     pkg.websiteUrl = "https://lumberjack.neontech.dev"
@@ -103,7 +104,7 @@ publishing {
     publications.withType<MavenPublication>().apply {
         val metadata by getting {
             // MavenPublication instances are Named
-            artifactId = "${rootProject.name}-common"
+            artifactId = "$artifact-common"
         }
     }
 }
