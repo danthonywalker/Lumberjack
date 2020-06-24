@@ -41,6 +41,7 @@ fun KotlinDependencyHandler.kotlinx(simpleModuleName: String, version: String? =
 
 kotlin {
     jvm()
+    js()
 
     sourceSets {
         val commonMain by getting {
@@ -58,7 +59,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 api(kotlin("stdlib"))
-                api(kotlinx("coroutines-core", "1.3.6"))
+                api(kotlinx("coroutines-core", "1.3.7"))
 
                 api("org.apache.logging.log4j:log4j-api:2.13.3")
             }
@@ -69,6 +70,28 @@ kotlin {
                 implementation(kotlin("test-junit"))
             }
         }
+
+        val sawtoothMain by creating {
+            dependsOn(commonMain)
+        }
+        val sawtoothTest by creating {
+            dependsOn(commonTest)
+        }
+
+        val jsMain by getting {
+            dependsOn(sawtoothMain)
+
+            dependencies {
+                api(kotlin("stdlib-js"))
+            }
+        }
+        val jsTest by getting {
+            dependsOn(sawtoothTest)
+
+            dependencies {
+                implementation(kotlin("test-js"))
+            }
+        }
     }
 }
 
@@ -77,7 +100,6 @@ bintray {
     key = System.getenv("BINTRAY_KEY")
 
     setPublications(*publishing.publications.names.toTypedArray())
-    publish = true
 
     pkg.repo = "maven"
     pkg.name = artifact
@@ -101,10 +123,14 @@ bintray {
 }
 
 publishing {
-    publications.withType<MavenPublication>().apply {
-        val metadata by getting {
-            // MavenPublication instances are Named
-            artifactId = "$artifact-common"
+    publications {
+        withType<MavenPublication> {
+            all {
+                artifactId = when (name) {
+                    "metadata" -> "$artifact-common"
+                    else -> artifactId.toLowerCase()
+                }
+            }
         }
     }
 }
@@ -115,7 +141,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "6.4"
+        gradleVersion = "6.5"
         distributionType = Wrapper.DistributionType.ALL
     }
 }
