@@ -20,7 +20,8 @@ import lumberjack.sawtooth.appender.Appender
 import lumberjack.sawtooth.event.LogEventFactory
 import lumberjack.sawtooth.level.LevelFactory
 
-data class Configuration(
+@Suppress("DataClassPrivateConstructor")
+data class Configuration private constructor(
 
     internal val levelFactory: LevelFactory,
 
@@ -29,7 +30,24 @@ data class Configuration(
     internal val appender: Appender
 ) {
 
-    companion object Factory
+    companion object Factory {
+
+        val DEFAULT: Configuration = configure()
+
+        fun configure(
+            levelFactory: LevelFactory = DEFAULT_LEVEL_FACTORY,
+            logEventFactory: LogEventFactory = DEFAULT_LOG_EVENT_FACTORY,
+            appender: Appender = DEFAULT_APPENDER
+        ): Configuration = Configuration(
+            levelFactory = levelFactory,
+            logEventFactory = logEventFactory,
+            appender = appender
+        )
+    }
 }
 
-expect fun Configuration.Factory.defaults(): Configuration
+internal expect val Configuration.Factory.DEFAULT_LEVEL_FACTORY: LevelFactory
+
+internal expect val Configuration.Factory.DEFAULT_LOG_EVENT_FACTORY: LogEventFactory
+
+internal expect val Configuration.Factory.DEFAULT_APPENDER: Appender

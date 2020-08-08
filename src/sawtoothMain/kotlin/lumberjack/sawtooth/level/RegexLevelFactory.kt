@@ -18,9 +18,20 @@ package lumberjack.sawtooth.level
 
 import lumberjack.Level
 
-expect class RegexLevelFactory(
+expect class RegexLevelFactory : LevelFactory {
 
-    regexLevels: List<RegexLevel>,
+    companion object Factory {
 
-    defaultLevel: Level
-) : LevelFactory
+        val DEFAULT: RegexLevelFactory
+
+        fun configure(
+            defaultLevel: Level = Level.Debug,
+            regexLevels: List<RegexLevel> = emptyList()
+        ): RegexLevelFactory
+    }
+}
+
+fun RegexLevelFactory.Factory.configure(
+    defaultLevel: Level = Level.Debug,
+    vararg regexLevels: RegexLevel
+): RegexLevelFactory = configure(defaultLevel, listOf(*regexLevels))

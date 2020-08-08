@@ -18,7 +18,6 @@ package lumberjack
 
 import lumberjack.message.Message
 import lumberjack.sawtooth.Configuration
-import lumberjack.sawtooth.defaults
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 
@@ -51,11 +50,19 @@ actual class Logger private constructor(
         }
     }
 
+    override fun toString(): String = name
+
+    override fun equals(other: Any?): Boolean {
+        return (other as? Logger)?.name == name
+    }
+
+    override fun hashCode(): Int = name.hashCode()
+
     actual companion object Factory {
 
         private val loggers = HashMap<String, Logger>()
 
-        var configuration: Configuration = Configuration.defaults()
+        var configuration: Configuration = Configuration.DEFAULT
 
         actual fun fromName(name: String): Logger =
             loggers.getOrPut(name) { Logger(name) }

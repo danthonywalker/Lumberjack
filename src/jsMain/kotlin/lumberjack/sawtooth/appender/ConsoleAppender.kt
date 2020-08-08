@@ -18,9 +18,10 @@ package lumberjack.sawtooth.appender
 
 import lumberjack.Level
 import lumberjack.sawtooth.event.LogEvent
+import lumberjack.sawtooth.layout.DeprecatedLayout
 import lumberjack.sawtooth.layout.Layout
 
-class ConsoleAppender(
+class ConsoleAppender private constructor(
 
     private val layout: Layout
 ) : Appender {
@@ -47,4 +48,19 @@ class ConsoleAppender(
     }
 
     override fun hashCode(): Int = layout.hashCode()
+
+    override fun toString(): String {
+        return "ConsoleAppender(" +
+            "layout=$layout" +
+            ")"
+    }
+
+    companion object Factory {
+
+        val DEFAULT: ConsoleAppender = withLayout()
+
+        fun withLayout(
+            layout: Layout = DeprecatedLayout
+        ): ConsoleAppender = ConsoleAppender(layout)
+    }
 }

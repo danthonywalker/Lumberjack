@@ -16,20 +16,18 @@
  */
 package lumberjack.sawtooth
 
-import lumberjack.Level
+import lumberjack.sawtooth.appender.Appender
 import lumberjack.sawtooth.appender.ConsoleAppender
+import lumberjack.sawtooth.event.LogEventFactory
 import lumberjack.sawtooth.event.ThreadLocalLogEventFactory
-import lumberjack.sawtooth.layout.DeprecatedLayout
+import lumberjack.sawtooth.level.LevelFactory
 import lumberjack.sawtooth.level.RegexLevelFactory
 
-actual fun Configuration.Factory.defaults(): Configuration =
-    Configuration(
-        levelFactory = RegexLevelFactory(
-            regexLevels = emptyList(),
-            defaultLevel = Level.Debug
-        ), logEventFactory = ThreadLocalLogEventFactory(
-            properties = emptySet()
-        ), appender = ConsoleAppender(
-            layout = DeprecatedLayout
-        )
-    )
+internal actual val Configuration.Factory.DEFAULT_LEVEL_FACTORY: LevelFactory
+    get() = RegexLevelFactory.DEFAULT
+
+internal actual val Configuration.Factory.DEFAULT_LOG_EVENT_FACTORY: LogEventFactory
+    get() = ThreadLocalLogEventFactory.DEFAULT
+
+internal actual val Configuration.Factory.DEFAULT_APPENDER: Appender
+    get() = ConsoleAppender.DEFAULT

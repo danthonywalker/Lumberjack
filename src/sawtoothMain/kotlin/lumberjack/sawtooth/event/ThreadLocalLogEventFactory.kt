@@ -22,7 +22,7 @@ import lumberjack.Marker
 import lumberjack.message.Message
 import kotlin.coroutines.CoroutineContext
 
-class ThreadLocalLogEventFactory(
+class ThreadLocalLogEventFactory private constructor(
 
     properties: Set<LogProperty<*>>
 ) : LogEventFactory {
@@ -45,5 +45,20 @@ class ThreadLocalLogEventFactory(
         ThreadLocalLogEvent.context = context
         ThreadLocalLogEvent.properties = properties
         return ThreadLocalLogEvent
+    }
+
+    override fun toString(): String {
+        return "ThreadLocalLogEventFactory(" +
+            "properties=$properties" +
+            ")"
+    }
+
+    companion object Factory {
+
+        val DEFAULT: ThreadLocalLogEventFactory = withProperties()
+
+        fun withProperties(
+            properties: Set<LogProperty<*>> = emptySet()
+        ): ThreadLocalLogEventFactory = ThreadLocalLogEventFactory(properties)
     }
 }

@@ -44,4 +44,16 @@ internal actual object ThreadLocalLogEvent : LogEvent {
     override fun <T : Any> property(key: PropertyKey<T>): T? {
         return properties[key]?.value(this) as? T
     }
+
+    override fun toString(): String {
+        return "ThreadLocalLogEvent(" +
+            "logger=$logger" +
+            ", level=$level" +
+            ", message=$message" +
+            ", marker=$marker" +
+            ", cause=$cause" +
+            ", context=$context" +
+            ", properties=$properties" +
+            ")"
+    }
 }

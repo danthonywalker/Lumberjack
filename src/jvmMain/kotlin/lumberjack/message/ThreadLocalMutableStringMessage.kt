@@ -35,4 +35,6 @@ actual object ThreadLocalMutableStringMessage : MutableStringMessage {
         set(value) = _log4JMessage.get().set(value)
 
     override fun writeTo(builder: StringBuilder): Unit = _log4JMessage.get().formatTo(builder)
+
+    override fun toString(): String = message
 }

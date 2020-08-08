@@ -19,4 +19,6 @@ package lumberjack.message
 actual object ThreadLocalMutableStringMessage : MutableStringMessage {
 
     override var message: String = ""
+
+    override fun toString(): String = message
 }

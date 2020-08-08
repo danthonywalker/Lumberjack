@@ -42,7 +42,7 @@ expect sealed class Level : Comparable<Level> {
 
     companion object Factory {
 
-        fun fromName(name: String, defaultLevel: Level = None): Level
+        fun fromName(name: String, defaultLevel: Level = Debug): Level
 
         fun toLevel(name: String, value: Int): Level
     }

@@ -19,16 +19,36 @@ package lumberjack.sawtooth.level
 import lumberjack.Level
 import lumberjack.Logger
 
-actual class RegexLevelFactory actual constructor(
+actual class RegexLevelFactory private constructor(
 
-    private val regexLevels: List<RegexLevel>,
+    private val defaultLevel: Level,
 
-    private val defaultLevel: Level
+    private val regexLevels: List<RegexLevel>
 ) : LevelFactory {
 
     private val cache = HashMap<Logger, Level>()
 
     override fun fromLogger(logger: Logger): Level = cache.getOrPut(logger) {
         regexLevels.firstOrNull { it.regex.matches(logger.name) }?.level ?: defaultLevel
+    }
+
+    override fun toString(): String {
+        return "RegexLevelFactory(" +
+            "defaultLevel=$defaultLevel" +
+            ", regexLevels=$regexLevels" +
+            ")"
+    }
+
+    actual companion object Factory {
+
+        actual val DEFAULT: RegexLevelFactory = configure()
+
+        actual fun configure(
+            defaultLevel: Level,
+            regexLevels: List<RegexLevel>
+        ): RegexLevelFactory = RegexLevelFactory(
+            defaultLevel = defaultLevel,
+            regexLevels = regexLevels
+        )
     }
 }

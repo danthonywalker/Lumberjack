@@ -64,4 +64,6 @@ object DeprecatedLayout : Layout {
             cause = cause.cause
         }
     }
+
+    override fun toString(): String = "DeprecatedLayout()"
 }
