@@ -25,6 +25,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.coroutineContext
 import kotlin.jvm.JvmName
+import kotlin.reflect.KClass
 
 expect class Logger {
 
@@ -43,6 +44,8 @@ expect class Logger {
     companion object Factory {
 
         fun fromName(name: String): Logger
+
+        fun fromKClass(kClass: KClass<*>): Logger
     }
 }
 
@@ -53,7 +56,7 @@ inline fun Logger.logc(
     context: CoroutineContext = EmptyCoroutineContext,
     message: () -> Any?
 ) {
-    if (this.level >= level) {
+    if ((level > Level.None) && (this.level >= level)) {
         val rawMessage = message() // ThreadLocalMutableStringMessage provides most efficient generic type conversion
         val typedMessage = (rawMessage as? Message) ?: ThreadLocalMutableStringMessage.message(rawMessage.toString())
         logc(level, typedMessage, marker, cause, context)

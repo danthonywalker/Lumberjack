@@ -22,7 +22,7 @@ import java.time.format.DateTimeFormatter
 plugins {
     kotlin("multiplatform") version "1.3.72"
 
-    id("com.github.ben-manes.versions") version "0.28.0"
+    id("com.github.ben-manes.versions") version "0.29.0"
 
     id("maven-publish")
     id("com.jfrog.bintray") version "1.8.5"
@@ -59,8 +59,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 api(kotlin("stdlib"))
-                api(kotlinx("coroutines-core", "1.3.7"))
-
+                api(kotlinx("coroutines-core", "1.3.8"))
                 api("org.apache.logging.log4j:log4j-api:2.13.3")
             }
         }
@@ -141,7 +140,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "6.5"
+        gradleVersion = "6.5.1"
         distributionType = Wrapper.DistributionType.ALL
     }
 }

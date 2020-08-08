@@ -20,6 +20,7 @@ import lumberjack.message.Message
 import org.apache.logging.log4j.LogManager
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KClass
 
 typealias Log4JLogger = org.apache.logging.log4j.Logger
 
@@ -51,6 +52,8 @@ actual class Logger private constructor(
         private val loggers = ConcurrentHashMap<Log4JLogger, Logger>()
 
         actual fun fromName(name: String): Logger = fromLogger(LogManager.getLogger(name))
+
+        actual fun fromKClass(kClass: KClass<*>): Logger = fromLogger(LogManager.getLogger(kClass.java))
 
         fun fromLogger(logger: Log4JLogger): Logger = loggers.computeIfAbsent(logger, ::Logger)
     }

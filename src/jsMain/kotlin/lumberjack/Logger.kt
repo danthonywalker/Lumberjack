@@ -17,7 +17,10 @@
 package lumberjack
 
 import lumberjack.message.Message
+import lumberjack.sawtooth.Configuration
+import lumberjack.sawtooth.defaults
 import kotlin.coroutines.CoroutineContext
+import kotlin.reflect.KClass
 
 actual class Logger private constructor(
 
@@ -25,7 +28,7 @@ actual class Logger private constructor(
 ) {
 
     actual val level: Level
-        get() = TODO()
+        get() = configuration.levelFactory.fromLogger(this)
 
     actual fun logc(
         level: Level,
@@ -33,13 +36,30 @@ actual class Logger private constructor(
         marker: Marker?,
         cause: Throwable?,
         context: CoroutineContext
-    ): Unit = TODO()
+    ) {
+        if ((level > Level.None) && (this.level >= level)) {
+            val event = configuration.logEventFactory.fromLogging(
+                logger = this,
+                level = level,
+                message = message,
+                marker = marker,
+                cause = cause,
+                context = context
+            )
+
+            configuration.appender.append(event)
+        }
+    }
 
     actual companion object Factory {
 
         private val loggers = HashMap<String, Logger>()
 
+        var configuration: Configuration = Configuration.defaults()
+
         actual fun fromName(name: String): Logger =
             loggers.getOrPut(name) { Logger(name) }
+
+        actual fun fromKClass(kClass: KClass<*>): Logger = fromName(kClass.js.name)
     }
 }
