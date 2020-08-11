@@ -16,6 +16,9 @@
  */
 package lumberjack
 
+import lumberjack.internal.getOrPut
+import kotlin.native.concurrent.AtomicReference
+
 actual class Marker private constructor(
 
     actual val name: String,
@@ -33,7 +36,7 @@ actual class Marker private constructor(
 
     actual companion object Factory {
 
-        private val markers = HashMap<String, Marker>()
+        private val markers = AtomicReference(emptyMap<String, Marker>())
 
         actual fun fromName(name: String, parents: Set<Marker>): Marker =
             markers.getOrPut(name) { Marker(name, parents.associateBy(Marker::name)) }

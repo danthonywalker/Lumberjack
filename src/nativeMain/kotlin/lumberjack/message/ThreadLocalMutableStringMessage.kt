@@ -14,28 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack
+package lumberjack.message
 
-actual class Marker private constructor(
+@ThreadLocal
+actual object ThreadLocalMutableStringMessage : MutableStringMessage {
 
-    actual val name: String,
+    override var message: String = ""
 
-    actual val parents: Map<String, Marker>
-) {
-
-    override fun toString(): String = name
-
-    override fun equals(other: Any?): Boolean {
-        return (other as? Marker)?.name == name
-    }
-
-    override fun hashCode(): Int = name.hashCode()
-
-    actual companion object Factory {
-
-        private val markers = HashMap<String, Marker>()
-
-        actual fun fromName(name: String, parents: Set<Marker>): Marker =
-            markers.getOrPut(name) { Marker(name, parents.associateBy(Marker::name)) }
-    }
+    override fun toString(): String = message
 }

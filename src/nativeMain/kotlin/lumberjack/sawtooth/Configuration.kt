@@ -14,28 +14,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack
+package lumberjack.sawtooth
 
-actual class Marker private constructor(
+import lumberjack.sawtooth.appender.Appender
+import lumberjack.sawtooth.appender.PrintAppender
+import lumberjack.sawtooth.event.LogEventFactory
+import lumberjack.sawtooth.event.ThreadLocalLogEventFactory
+import lumberjack.sawtooth.level.LevelFactory
+import lumberjack.sawtooth.level.RegexLevelFactory
 
-    actual val name: String,
+internal actual val Configuration.Factory.DEFAULT_LEVEL_FACTORY: LevelFactory
+    get() = RegexLevelFactory.DEFAULT
 
-    actual val parents: Map<String, Marker>
-) {
+internal actual val Configuration.Factory.DEFAULT_LOG_EVENT_FACTORY: LogEventFactory
+    get() = ThreadLocalLogEventFactory.DEFAULT
 
-    override fun toString(): String = name
-
-    override fun equals(other: Any?): Boolean {
-        return (other as? Marker)?.name == name
-    }
-
-    override fun hashCode(): Int = name.hashCode()
-
-    actual companion object Factory {
-
-        private val markers = HashMap<String, Marker>()
-
-        actual fun fromName(name: String, parents: Set<Marker>): Marker =
-            markers.getOrPut(name) { Marker(name, parents.associateBy(Marker::name)) }
-    }
-}
+internal actual val Configuration.Factory.DEFAULT_APPENDER: Appender
+    get() = PrintAppender.DEFAULT

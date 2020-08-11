@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
+import org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -34,14 +35,49 @@ repositories {
 
 group = "dev.neontech.lumberjack"
 val artifact: String = name.toLowerCase()
-version = "0.3.2"
+version = "0.4.0"
 
 fun KotlinDependencyHandler.kotlinx(simpleModuleName: String, version: String? = null): String =
     "org.jetbrains.kotlinx:kotlinx-$simpleModuleName${if (version == null) "" else ":$version"}"
 
+val ideaActive: Boolean = System.getProperty("idea.active")?.toBoolean() ?: false
+val osName: String = System.getProperty("os.name")
+
 kotlin {
-    jvm()
-    js()
+    jvm()                       // Kotlin/JVM
+    js()                        // Kotlin/JS
+    // TODO android()           // Android
+    androidNativeArm32()        // Android NDK
+    androidNativeArm64()        // Android NDK
+    iosArm32()                  // iOS
+    iosArm64()                  // iOS
+    iosX64()                    // iOS
+    watchosArm32()              // watchOS
+    watchosArm64()              // watchOS
+    watchosX86()                // watchOS
+    tvosArm64()                 // tvOS
+    tvosX64()                   // tvOS
+    linuxArm64()                // Linux
+    linuxArm32Hfp()             // Linux
+    linuxMips32()               // Linux
+    linuxMipsel32()             // Linux
+    val linuxX64 = linuxX64()   // Linux
+    val macosX64 = macosX64()   // MacOS
+    val mingwX64 = mingwX64()   // Windows
+    mingwX86()                  // Windows
+    wasm32()                    // WebAssembly
+
+    if (ideaActive) {
+        val target = when {
+            "Linux" in osName -> linuxX64
+            "Mac" in osName -> macosX64
+            "Windows" in osName -> mingwX64
+            else -> TODO(osName)
+        }
+
+        @Suppress("ReplaceNotNullAssertionWithElvisReturn")
+        targetFromPreset(target.preset!!, "native")
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -91,6 +127,22 @@ kotlin {
                 implementation(kotlin("test-js"))
             }
         }
+
+        val nativeMain = maybeCreate("nativeMain")
+        val nativeTest = maybeCreate("nativeTest")
+
+        nativeMain.dependsOn(sawtoothMain)
+        nativeMain.dependsOn(sawtoothTest)
+
+        val nonNativeMains = setOf(commonMain, jvmMain, sawtoothMain, jsMain, nativeMain)
+        val nonNativeTests = setOf(commonTest, jvmTest, sawtoothTest, jsTest, nativeTest)
+
+        filterNot(nonNativeMains::contains)
+            .filter { it.name.endsWith("Main") }
+            .forEach { it.dependsOn(nativeMain) }
+        filterNot(nonNativeTests::contains)
+            .filter { it.name.endsWith("Test") }
+            .forEach { it.dependsOn(nativeTest) }
     }
 }
 
@@ -133,6 +185,23 @@ publishing {
 }
 
 tasks {
+    bintrayUpload {
+        doFirst {
+            publishing {
+                publications {
+                    withType<MavenPublication> {
+                        // https://github.com/bintray/gradle-bintray-plugin/issues/229
+                        val moduleFile = buildDir.resolve("publications/$name/module.json")
+                        check(moduleFile.exists()) { "$moduleFile does not exist" }
+                        artifact(object : FileBasedMavenArtifact(moduleFile) {
+                            override fun getDefaultExtension(): String = "module"
+                        })
+                    }
+                }
+            }
+        }
+    }
+
     dependencyUpdates {
         gradleReleaseChannel = "current"
     }

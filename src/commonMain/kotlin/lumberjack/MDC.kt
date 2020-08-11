@@ -17,7 +17,6 @@
 package lumberjack
 
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 
 typealias Context = Map<String, String>
 

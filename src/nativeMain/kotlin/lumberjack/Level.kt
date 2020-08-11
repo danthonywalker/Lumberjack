@@ -16,6 +16,9 @@
  */
 package lumberjack
 
+import lumberjack.internal.getOrPut
+import kotlin.native.concurrent.AtomicReference
+
 actual sealed class Level(
 
     actual val name: String,
@@ -25,7 +28,7 @@ actual sealed class Level(
 
     final override fun compareTo(other: Level): Int = value.compareTo(other.value)
 
-    final override fun toString(): String = name
+    override fun toString(): String = name
 
     final override fun equals(other: Any?): Boolean {
         return (other as? Level)?.name == name
@@ -53,12 +56,11 @@ actual sealed class Level(
 
     actual companion object Factory {
 
-        private val levels = HashMap<String, Level>(8)
+        private val levels = AtomicReference(emptyMap<String, Level>())
 
-        actual fun fromName(name: String, defaultLevel: Level): Level = (levels[name] ?: defaultLevel)
+        actual fun fromName(name: String, defaultLevel: Level): Level = (levels.value[name] ?: defaultLevel)
 
         actual fun toLevel(name: String, value: Int): Level {
-            // Lazy load prevents ExceptionInInitializerError
             return levels.getOrPut(name) {
                 when (name) {
                     None.name -> None
