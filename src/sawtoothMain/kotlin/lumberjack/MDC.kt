@@ -18,6 +18,7 @@ package lumberjack
 
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 actual class MDC actual constructor(
 
@@ -34,5 +35,10 @@ actual class MDC actual constructor(
 
     override fun hashCode(): Int = context.hashCode()
 
-    actual companion object Key : CoroutineContext.Key<MDC>
+    actual companion object Key : CoroutineContext.Key<MDC> {
+
+        actual val EMPTY: MDC = MDC(emptyMap())
+
+        actual suspend operator fun invoke(): MDC = coroutineContext[MDC] ?: EMPTY
+    }
 }

@@ -62,3 +62,7 @@ class ThreadLocalLogEventFactory private constructor(
         ): ThreadLocalLogEventFactory = ThreadLocalLogEventFactory(properties)
     }
 }
+
+fun ThreadLocalLogEventFactory.Factory.withProperties(
+    vararg properties: LogProperty<*>
+): ThreadLocalLogEventFactory = withProperties(setOf(*properties))

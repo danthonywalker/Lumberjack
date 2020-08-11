@@ -23,7 +23,10 @@ typealias Context = Map<String, String>
 
 expect class MDC(context: Context) : CoroutineContext.Element, Context {
 
-    companion object Key : CoroutineContext.Key<MDC>
-}
+    companion object Key : CoroutineContext.Key<MDC> {
 
-suspend operator fun MDC.Key.invoke(): MDC = coroutineContext[MDC] ?: MDC(emptyMap())
+        val EMPTY: MDC
+
+        suspend operator fun invoke(): MDC
+    }
+}
