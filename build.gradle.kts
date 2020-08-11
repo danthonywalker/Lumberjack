@@ -124,11 +124,9 @@ bintray {
 publishing {
     publications {
         withType<MavenPublication> {
-            all {
-                artifactId = when (name) {
-                    "metadata" -> "$artifact-common"
-                    else -> artifactId.toLowerCase()
-                }
+            artifactId = when (name) {
+                "metadata" -> "$artifact-common"
+                else -> artifactId.toLowerCase()
             }
         }
     }
