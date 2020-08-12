@@ -1,14 +1,12 @@
-name: Lumberjack CI
-
 on:
   pull_request:
-    types: [opened]
+    types: [opened, reopened, synchronize]
   push:
   release:
     types: [published]
 
 jobs:
-  build:
+  lumberjack:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
@@ -17,25 +15,18 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
         with:
-          path: ~/.gradle
+          path: |
+            ~/.gradle
+            ~/.konan
           key: ${{ matrix.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
       - uses: actions/setup-java@v1
         with:
           java-version: 8
       - name: Gradle Build
         run: ./gradlew build
-  publish:
-    runs-on: ${{ matrix.os }}
-    needs: build
-    if: ${{ github.event_name == 'release' }}
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: ~/.gradle
-          key: ${{ matrix.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
-      - uses: actions/setup-java@v1
-        with:
-          java-version: 8
       - name: Gradle Publish
+        if: ${{ github.event_name == 'release' }}
         run: ./gradlew bintrayPublish
+        env:
+          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
+          BINTRAY_KEY: ${{ secrets.BINTRAY_KEY }}
