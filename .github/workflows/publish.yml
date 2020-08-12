@@ -8,14 +8,19 @@ on:
     types: [published]
 
 jobs:
-  lumberjack:
+  publish:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
+
     runs-on: ${{ matrix.os }}
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Cache
+        uses: actions/cache@v2
         with:
           path: |
             ~/.gradle/caches
@@ -23,11 +28,15 @@ jobs:
           key: ${{ matrix.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
           restore-keys: |
             ${{ matrix.os }}-gradle-
-      - uses: actions/setup-java@v1
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
         with:
           java-version: 8
+
       - name: Gradle Build
         run: ./gradlew build
+
       - name: Gradle Publish
         if: ${{ github.event_name == 'release' }}
         run: ./gradlew bintrayPublish
