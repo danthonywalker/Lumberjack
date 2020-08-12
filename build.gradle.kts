@@ -44,8 +44,9 @@ val ideaActive: Boolean = System.getProperty("idea.active")?.toBoolean() ?: fals
 val osName: String = System.getProperty("os.name")
 
 kotlin {
-    jvm()                       // Kotlin/JVM
-    js()                        // Kotlin/JS
+    val metadata = metadata()   // Kotlin/Common
+    val jvm = jvm()             // Kotlin/JVM
+    val js = js()               // Kotlin/JS
     // TODO android()           // Android
     androidNativeArm32()        // Android NDK
     androidNativeArm64()        // Android NDK
@@ -65,7 +66,7 @@ kotlin {
     val macosX64 = macosX64()   // MacOS
     val mingwX64 = mingwX64()   // Windows
     mingwX86()                  // Windows
-    wasm32()                    // WebAssembly
+    val wasm32 = wasm32()       // WebAssembly
 
     if (ideaActive) {
         val target = when {
@@ -77,6 +78,38 @@ kotlin {
 
         @Suppress("ReplaceNotNullAssertionWithElvisReturn")
         targetFromPreset(target.preset!!, "native")
+
+    } else { // Running CI environment
+        val publishingTargets = when {
+            "Linux" in osName -> {
+                val universalTargets = setOf(jvm, js, wasm32)
+                val androidTargets = targets.filter { it.name.startsWith("android") }
+                val linuxTargets = targets.filter { it.name.startsWith("linux") }
+                universalTargets + androidTargets + linuxTargets + metadata
+            }
+
+            "Mac" in osName -> {
+                val iosTargets = targets.filter { it.name.startsWith("ios") }
+                val watchosTargets = targets.filter { it.name.startsWith("watchos") }
+                val tvosTargets = targets.filter { it.name.startsWith("tvos") }
+                val macosTargets = targets.filter { it.name.startsWith("macos") }
+                iosTargets + watchosTargets + tvosTargets + macosTargets + metadata
+            }
+
+            "Windows" in osName -> {
+                val mingwTargets = targets.filter { it.name.startsWith("mingw") }
+                mingwTargets + metadata
+            }
+
+            else -> TODO(osName)
+        }
+
+        val ignoredTargets = targets.filterNot(publishingTargets::contains)
+
+        tasks.filter { task ->
+            // Disable compile/publication tasks for ignored targets
+            ignoredTargets.any { task.name.contains(it.name, true) }
+        }.forEach { it.enabled = false }
     }
 
     sourceSets {
@@ -192,10 +225,11 @@ tasks {
                     withType<MavenPublication> {
                         // https://github.com/bintray/gradle-bintray-plugin/issues/229
                         val moduleFile = buildDir.resolve("publications/$name/module.json")
-                        check(moduleFile.exists()) { "$moduleFile does not exist" }
-                        artifact(object : FileBasedMavenArtifact(moduleFile) {
-                            override fun getDefaultExtension(): String = "module"
-                        })
+                        if (moduleFile.exists()) {
+                            artifact(object : FileBasedMavenArtifact(moduleFile) {
+                                override fun getDefaultExtension(): String = "module"
+                            })
+                        }
                     }
                 }
             }
