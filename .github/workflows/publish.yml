@@ -1,0 +1,45 @@
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - master
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.konan/cache
+          key: ${{ matrix.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
+          restore-keys: |
+            ${{ matrix.os }}-gradle-
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+
+      - name: Gradle Build
+        run: ./gradlew build
+
+      - name: Gradle Publish
+        if: ${{ github.event_name == 'release' }}
+        run: ./gradlew bintrayUpload
+        env:
+          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
+          BINTRAY_KEY: ${{ secrets.BINTRAY_KEY }}
