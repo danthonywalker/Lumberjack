@@ -15,9 +15,11 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: |
-            ~/.gradle
-            ~/.konan
+            ~/.gradle/caches
+            ~/.konan/cache
           key: ${{ matrix.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       - uses: actions/setup-java@v1
         with:
           java-version: 8
