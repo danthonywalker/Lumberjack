@@ -1,14 +1,20 @@
+name: Build
+
 on:
   pull_request:
     types: [opened, reopened, synchronize]
+    paths-ignore:
+      - 'docs/**'
   push:
     branches:
       - master
+    paths-ignore:
+      - 'docs/**'
   release:
     types: [published]
 
 jobs:
-  publish:
+  build:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
@@ -23,8 +29,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.gradle/caches
-            ~/.konan/cache
+            ~/.gradle
+            ~/.konan
           key: ${{ matrix.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
           restore-keys: |
             ${{ matrix.os }}-gradle-
@@ -37,9 +43,12 @@ jobs:
       - name: Gradle Build
         run: ./gradlew build
 
-      - name: Gradle Publish
+      - name: Gradle Upload
         if: ${{ github.event_name == 'release' }}
         run: ./gradlew bintrayUpload
         env:
           BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
           BINTRAY_KEY: ${{ secrets.BINTRAY_KEY }}
+
+      - name: Gradle Stop
+        run: ./gradlew --stop
