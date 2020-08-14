@@ -19,7 +19,7 @@ package lumberjack
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
-actual class MDC actual constructor(
+actual class MDC private constructor(
 
     private val context: Context
 ) : AbstractCoroutineContextElement(MDC),
@@ -36,6 +36,14 @@ actual class MDC actual constructor(
 
     actual companion object Key : CoroutineContext.Key<MDC> {
 
-        actual val EMPTY: MDC = MDC(emptyMap())
+        private val EMPTY: MDC = MDC(emptyMap())
+
+        actual fun fromContext(context: Context): MDC {
+            return when { // Avoid allocate if possible
+                context.isEmpty() -> EMPTY
+                context is MDC -> context
+                else -> MDC(context)
+            }
+        }
     }
 }

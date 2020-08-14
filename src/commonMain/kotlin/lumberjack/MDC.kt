@@ -21,15 +21,13 @@ import kotlin.coroutines.coroutineContext
 
 typealias Context = Map<String, String>
 
-expect class MDC(context: Context) : CoroutineContext.Element, Context {
+expect class MDC : CoroutineContext.Element, Context {
 
     companion object Key : CoroutineContext.Key<MDC> {
 
-        val EMPTY: MDC
+        fun fromContext(context: Context = emptyMap()): MDC
     }
 }
 
-suspend inline fun mdc(block: (MDC) -> Context = { it }): MDC {
-    val result = block(coroutineContext[MDC] ?: MDC.EMPTY)
-    return (result as? MDC) ?: MDC(result)
-}
+suspend inline fun mdc(block: (MDC) -> Context = { it }): MDC =
+    MDC.fromContext(block(coroutineContext[MDC] ?: MDC.fromContext()))
