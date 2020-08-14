@@ -20,7 +20,6 @@ import kotlinx.coroutines.ThreadContextElement
 import org.apache.logging.log4j.ThreadContext
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 
 actual class MDC actual constructor(
 
@@ -52,7 +51,5 @@ actual class MDC actual constructor(
     actual companion object Key : CoroutineContext.Key<MDC> {
 
         actual val EMPTY: MDC = MDC(emptyMap())
-
-        actual suspend operator fun invoke(): MDC = coroutineContext[MDC] ?: EMPTY
     }
 }

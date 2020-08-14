@@ -35,7 +35,7 @@ repositories {
 
 group = "dev.neontech.lumberjack"
 val artifact: String = name.toLowerCase()
-version = "0.4.0"
+version = "0.5.0"
 
 fun KotlinDependencyHandler.kotlinx(simpleModuleName: String, version: String? = null): String =
     "org.jetbrains.kotlinx:kotlinx-$simpleModuleName${if (version == null) "" else ":$version"}"

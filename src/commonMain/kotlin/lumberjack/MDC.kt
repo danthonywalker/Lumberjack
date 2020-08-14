@@ -17,6 +17,7 @@
 package lumberjack
 
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 typealias Context = Map<String, String>
 
@@ -25,7 +26,10 @@ expect class MDC(context: Context) : CoroutineContext.Element, Context {
     companion object Key : CoroutineContext.Key<MDC> {
 
         val EMPTY: MDC
-
-        suspend operator fun invoke(): MDC
     }
+}
+
+suspend inline fun mdc(block: (MDC) -> Context = { it }): MDC {
+    val result = block(coroutineContext[MDC] ?: MDC.EMPTY)
+    return (result as? MDC) ?: MDC(result)
 }
