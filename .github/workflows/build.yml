@@ -3,13 +3,9 @@ name: Build
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-    paths-ignore:
-      - 'docs/**'
   push:
     branches:
       - master
-    paths-ignore:
-      - 'docs/**'
   release:
     types: [published]
 
