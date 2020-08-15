@@ -11,4 +11,5 @@ internal var _componentRegistry: Map<String, PatternComponent> = mapOf(
     "cause" to CauseComponent
 )
 
-internal actual val componentRegistry: Map<String, PatternComponent> by _componentRegistry
+internal actual val componentRegistry: Map<String, PatternComponent>
+    get() = _componentRegistry
