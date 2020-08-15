@@ -22,6 +22,7 @@ import lumberjack.sawtooth.Configuration
 import kotlin.coroutines.CoroutineContext
 import kotlin.native.concurrent.AtomicReference
 import kotlin.native.concurrent.freeze
+import kotlin.native.concurrent.isFrozen
 import kotlin.reflect.KClass
 
 actual class Logger private constructor(
@@ -70,7 +71,7 @@ actual class Logger private constructor(
 
         var configuration: Configuration
             get() = _configuration.value
-            set(value) = value.run { _configuration.value = this.freeze() }
+            set(value) = value.run { _configuration.value = if (isFrozen) this else freeze() }
 
         actual fun fromName(name: String): Logger =
             loggers.getOrPut(name) { Logger(name) }
