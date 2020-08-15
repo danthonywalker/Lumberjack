@@ -17,8 +17,11 @@
 package lumberjack.sawtooth
 
 import lumberjack.sawtooth.appender.Appender
+import lumberjack.sawtooth.appender.RegexCompositeAppender
 import lumberjack.sawtooth.event.LogEventFactory
+import lumberjack.sawtooth.event.ThreadLocalLogEventFactory
 import lumberjack.sawtooth.level.LevelFactory
+import lumberjack.sawtooth.level.RegexLevelFactory
 
 @Suppress("DataClassPrivateConstructor")
 data class Configuration private constructor(
@@ -35,9 +38,9 @@ data class Configuration private constructor(
         val DEFAULT: Configuration = configure()
 
         fun configure(
-            levelFactory: LevelFactory = DEFAULT_LEVEL_FACTORY,
-            logEventFactory: LogEventFactory = DEFAULT_LOG_EVENT_FACTORY,
-            appender: Appender = DEFAULT_APPENDER
+            levelFactory: LevelFactory = RegexLevelFactory.DEFAULT,
+            logEventFactory: LogEventFactory = ThreadLocalLogEventFactory.DEFAULT,
+            appender: Appender = RegexCompositeAppender.DEFAULT
         ): Configuration = Configuration(
             levelFactory = levelFactory,
             logEventFactory = logEventFactory,
@@ -45,9 +48,3 @@ data class Configuration private constructor(
         )
     }
 }
-
-internal expect val Configuration.Factory.DEFAULT_LEVEL_FACTORY: LevelFactory
-
-internal expect val Configuration.Factory.DEFAULT_LOG_EVENT_FACTORY: LogEventFactory
-
-internal expect val Configuration.Factory.DEFAULT_APPENDER: Appender

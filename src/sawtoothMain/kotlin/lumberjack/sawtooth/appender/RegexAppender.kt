@@ -14,20 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.sawtooth
+package lumberjack.sawtooth.appender
 
-import lumberjack.sawtooth.appender.Appender
-import lumberjack.sawtooth.appender.ConsoleAppender
-import lumberjack.sawtooth.event.LogEventFactory
-import lumberjack.sawtooth.event.ThreadLocalLogEventFactory
-import lumberjack.sawtooth.level.LevelFactory
-import lumberjack.sawtooth.level.RegexLevelFactory
+data class RegexAppender(
 
-internal actual val Configuration.Factory.DEFAULT_LEVEL_FACTORY: LevelFactory
-    get() = RegexLevelFactory.DEFAULT
+    val regex: Regex,
 
-internal actual val Configuration.Factory.DEFAULT_LOG_EVENT_FACTORY: LogEventFactory
-    get() = ThreadLocalLogEventFactory.DEFAULT
-
-internal actual val Configuration.Factory.DEFAULT_APPENDER: Appender
-    get() = ConsoleAppender.DEFAULT
+    val appender: Appender
+)
