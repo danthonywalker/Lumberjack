@@ -48,3 +48,6 @@ data class Configuration private constructor(
         )
     }
 }
+
+inline fun <T> withProperties(vararg properties: LogProperty<*>, block: (properties: Set<LogProperty<*>>, keys: Set<PropertyKey<*>>) -> T): T =
+    block(properties.toSet(), properties.map(LogProperty<*>::key).toSet())
