@@ -60,7 +60,7 @@ class PatternLayout(val components: List<PatternComponent>) : Layout {
             val registry =
                 componentRegistry +
                 localRegistry +
-                loggerProperties.associate { key -> Pair(key.name, { PropertyComponent(key) }) }
+                loggerProperties.associate { key -> Pair(key.name, { _: List<String> -> PropertyComponent(key) }) }
 
             var start = 0
             //Find our first match in the pattern
