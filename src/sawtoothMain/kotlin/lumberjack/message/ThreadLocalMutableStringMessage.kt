@@ -16,6 +16,8 @@
  */
 package lumberjack.message
 
+import kotlin.native.concurrent.ThreadLocal
+
 @ThreadLocal
 actual object ThreadLocalMutableStringMessage : MutableStringMessage {
 
