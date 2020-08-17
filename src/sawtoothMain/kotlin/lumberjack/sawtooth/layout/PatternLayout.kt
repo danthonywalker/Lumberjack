@@ -21,6 +21,7 @@ import lumberjack.sawtooth.event.LogEvent
 import lumberjack.sawtooth.event.PropertyKey
 
 class PatternLayout(val components: List<PatternComponent>) : Layout {
+    @Suppress("RedundantLambdaArrow")
     companion object Factory {
         //language=RegExp
         /** Matches an opening brace, followed by one or more word characters [0-9a-zA-Z_], followed by a closing brace */
@@ -41,15 +42,15 @@ class PatternLayout(val components: List<PatternComponent>) : Layout {
         private val tokenModifierRegex = TOKEN_MODIFIER_PATTERN.toRegex()
 
         internal val defaultComponentRegistry: Map<String, PatternComponentInitialiser> = mapOf(
-            "m" to { MessageComponent },
-            "msg" to { MessageComponent },
-            "message" to { MessageComponent },
-            "lvl" to { LevelComponent },
-            "level" to { LevelComponent },
-            "logger" to { LoggerComponent },
-            "marker" to { MarkerComponent },
-            "mdc" to { MDCComponent },
-            "cause" to { CauseComponent }
+            "m" to { _: List<String> -> MessageComponent },
+            "msg" to { _: List<String> -> MessageComponent },
+            "message" to { _: List<String> -> MessageComponent },
+            "lvl" to { _: List<String> -> LevelComponent },
+            "level" to { _: List<String> -> LevelComponent },
+            "logger" to { _: List<String> -> LoggerComponent },
+            "marker" to { _: List<String> -> MarkerComponent },
+            "mdc" to { _: List<String> -> MDCComponent },
+            "cause" to { _: List<String> -> CauseComponent }
         )
 
         fun fromPattern(pattern: String, loggerProperties: Set<PropertyKey<*>> = emptySet(), localRegistry: Map<String, PatternComponentInitialiser> = emptyMap()): PatternLayout {
