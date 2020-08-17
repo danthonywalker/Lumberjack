@@ -21,7 +21,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 plugins {
-    kotlin("multiplatform") version "1.3.72"
+    kotlin("multiplatform") version "1.4.0"
 
     id("com.github.ben-manes.versions") version "0.29.0"
 
@@ -46,7 +46,12 @@ val osName: String = System.getProperty("os.name")
 kotlin {
     val metadata = metadata()   // Kotlin/Common
     val jvm = jvm()             // Kotlin/JVM
-    val js = js()               // Kotlin/JS
+
+    val js = js {               // Kotlin/JS
+        browser()
+        nodejs()
+    }
+
     // TODO android()           // Android
     androidNativeArm32()        // Android NDK
     androidNativeArm64()        // Android NDK
@@ -114,9 +119,6 @@ kotlin {
 
     sourceSets {
         val commonMain by getting {
-            dependencies {
-                api(kotlin("stdlib-common"))
-            }
         }
         val commonTest by getting {
             dependencies {
@@ -127,8 +129,7 @@ kotlin {
 
         val jvmMain by getting {
             dependencies {
-                api(kotlin("stdlib"))
-                api(kotlinx("coroutines-core", "1.3.8"))
+                api(kotlinx("coroutines-core", "1.3.9"))
                 api("org.apache.logging.log4j:log4j-api:2.13.3")
             }
         }
@@ -148,10 +149,6 @@ kotlin {
 
         val jsMain by getting {
             dependsOn(sawtoothMain)
-
-            dependencies {
-                api(kotlin("stdlib-js"))
-            }
         }
         val jsTest by getting {
             dependsOn(sawtoothTest)
