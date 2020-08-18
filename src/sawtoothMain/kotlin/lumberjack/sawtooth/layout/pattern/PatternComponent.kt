@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.sawtooth.layout
+package lumberjack.sawtooth.layout.pattern
 
-import lumberjack.sawtooth.component.*
+import lumberjack.sawtooth.event.LogEvent
+import lumberjack.sawtooth.layout.Layout
 
-internal var _componentRegistry: Map<String, PatternComponentInitialiser> = PatternLayout.defaultComponentRegistry
+interface PatternComponent : Layout {
 
-public actual var PatternLayout.Factory.componentRegistry: Map<String, PatternComponentInitialiser>
-    get() = _componentRegistry
-    set(value) = value.run { _componentRegistry = this }
+    override fun writeTo(builder: StringBuilder, event: LogEvent)
+}

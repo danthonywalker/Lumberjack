@@ -14,13 +14,32 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.sawtooth.component
+package lumberjack.sawtooth.layout.pattern
 
-import lumberjack.MDC
 import lumberjack.sawtooth.event.LogEvent
 
-object MDCComponent : PatternComponent {
+class CauseComponent private constructor() : PatternComponent {
+
     override fun writeTo(builder: StringBuilder, event: LogEvent) {
-        event.context[MDC]?.takeIf(MDC::isNotEmpty)?.let(builder::append)
+        // TODO Use js() function in Kotlin/JS for full stacktrace
+        var cause = event.cause
+        while (cause != null) {
+            builder.append("\nCaused by: ")
+
+            builder.append(cause::class.simpleName)
+            builder.append(" (")
+            builder.append(cause.message)
+            builder.append(')')
+
+            cause = cause.cause
+        }
+    }
+
+    companion object Factory {
+
+        fun withModifiers(modifiers: List<String> = emptyList()): CauseComponent {
+            require(modifiers.isEmpty()) { "Illegal Modifiers: $modifiers" }
+            return CauseComponent()
+        }
     }
 }

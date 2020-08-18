@@ -14,13 +14,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.sawtooth.component
+package lumberjack.sawtooth.layout.pattern
 
+import lumberjack.MDC
 import lumberjack.sawtooth.event.LogEvent
-import lumberjack.sawtooth.layout.Layout
 
-public typealias PatternComponentInitialiser=(modifiers: List<String>) -> PatternComponent
+class MDCComponent private constructor() : PatternComponent {
 
-interface PatternComponent: Layout {
-    override fun writeTo(builder: StringBuilder, event: LogEvent)
+    override fun writeTo(builder: StringBuilder, event: LogEvent) {
+        event.context[MDC]?.takeIf(MDC::isNotEmpty)?.run(builder::append)
+    }
+
+    companion object Factory {
+
+        fun withModifiers(modifiers: List<String> = emptyList()): MDCComponent {
+            require(modifiers.isEmpty()) { "Illegal Modifiers: $modifiers" }
+            return MDCComponent()
+        }
+    }
 }

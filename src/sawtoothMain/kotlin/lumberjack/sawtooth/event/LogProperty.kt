@@ -18,13 +18,6 @@ package lumberjack.sawtooth.event
 
 interface LogProperty<T : Any> {
 
-    companion object Factory {
-        inline fun <reified T : Any> fromName(name: String, crossinline block: (LogEvent) -> T?): LogProperty<T> = object : LogProperty<T> {
-            override val key: PropertyKey<T> = PropertyKey(name, T::class)
-            override fun value(event: LogEvent): T? = block(event)
-        }
-    }
-
     val key: PropertyKey<T>
 
     fun value(event: LogEvent): T?

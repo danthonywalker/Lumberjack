@@ -14,14 +14,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.sawtooth.component
+package lumberjack.sawtooth.layout.pattern
 
 import lumberjack.sawtooth.event.LogEvent
 
-data class RawComponent(val string: String) : PatternComponent {
-    constructor(value: Any?) : this(value.toString())
+class LoggerComponent private constructor() : PatternComponent {
 
     override fun writeTo(builder: StringBuilder, event: LogEvent) {
-        builder.append(string)
+        builder.append(event.logger.name)
+    }
+
+    companion object Factory {
+
+        fun withModifiers(modifiers: List<String> = emptyList()): LoggerComponent {
+            require(modifiers.isEmpty()) { "Illegal Modifiers: $modifiers" }
+            return LoggerComponent()
+        }
     }
 }

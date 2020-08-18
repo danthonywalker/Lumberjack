@@ -51,8 +51,12 @@ data class Configuration private constructor(
     }
 }
 
-inline fun <T> withProperties(properties: Iterable<LogProperty<*>>, block: (properties: Set<LogProperty<*>>, keys: Set<PropertyKey<*>>) -> T): T =
-    block(properties.toSet(), properties.mapTo(LinkedHashSet(), LogProperty<*>::key))
+inline fun <T> withProperties(
+    properties: Set<LogProperty<*>>,
+    block: (properties: Set<LogProperty<*>>, keys: Set<PropertyKey<*>>) -> T
+): T = block(properties, properties.mapTo(HashSet(properties.size), LogProperty<*>::key))
 
-inline fun <T> withProperties(vararg properties: LogProperty<*>, block: (properties: Set<LogProperty<*>>, keys: Set<PropertyKey<*>>) -> T): T =
-    block(properties.toSet(), properties.mapTo(LinkedHashSet(properties.size), LogProperty<*>::key))
+inline fun <T> withProperties(
+    vararg properties: LogProperty<*>,
+    block: (properties: Set<LogProperty<*>>, keys: Set<PropertyKey<*>>) -> T
+): T = withProperties(properties.toSet(), block)
