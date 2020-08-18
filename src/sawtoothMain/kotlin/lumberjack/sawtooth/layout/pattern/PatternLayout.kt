@@ -74,14 +74,14 @@ class PatternLayout private constructor(
                 //If groupValues[1] is empty, it means we matched a sequence with brackets around it, so get the second group value
                 val token = tokenMatch.groupValues[1].takeUnless(String::isEmpty) ?: tokenMatch.groupValues[2]
 
-                val modifiers = ArrayList<String>(0)
-                val patternComponent = componentFactory.fromToken(token, modifiers)
-                if (patternComponent != null) {
-                    //If we have an initializer, invoke it and add it to the list of components
-                    //The list of modifiers is obtained by finding all valid matches of tokenModifierRegex on the third group value
-                    tokenModifierRegex.findAll(tokenMatch.groupValues[3]).mapTo(modifiers) { result -> result.groupValues[1] }
-                    components.add(patternComponent)
-                }
+                //The list of modifiers is obtained by finding all valid matches of tokenModifierRegex on the third group value
+                val modifiers = tokenModifierRegex.findAll(tokenMatch.groupValues[3]).map { result -> result.groupValues[1] }
+
+                val patternComponent = componentFactory.fromToken(token, modifiers.toList())
+                patternComponent?.let(components::add)
+//                if (patternComponent != null) {
+//                    components.add(patternComponent)
+//                }
 
                 //Increment our starting position to the end of our match, then recurse and find another match
                 start = tokenMatch.range.last + 1
