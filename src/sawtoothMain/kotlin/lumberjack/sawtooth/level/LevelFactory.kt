@@ -19,7 +19,7 @@ package lumberjack.sawtooth.level
 import lumberjack.Level
 import lumberjack.Logger
 
-interface LevelFactory {
+fun interface LevelFactory {
 
     fun fromLogger(logger: Logger): Level
 }

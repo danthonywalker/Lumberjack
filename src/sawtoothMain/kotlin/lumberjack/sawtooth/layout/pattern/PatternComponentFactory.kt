@@ -16,7 +16,7 @@
  */
 package lumberjack.sawtooth.layout.pattern
 
-interface PatternComponentFactory {
+fun interface PatternComponentFactory {
 
     fun fromToken(token: String, modifiers: List<String>): PatternComponent?
 }

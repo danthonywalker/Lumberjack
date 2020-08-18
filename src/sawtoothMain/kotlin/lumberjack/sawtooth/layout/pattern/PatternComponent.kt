@@ -19,7 +19,7 @@ package lumberjack.sawtooth.layout.pattern
 import lumberjack.sawtooth.event.LogEvent
 import lumberjack.sawtooth.layout.Layout
 
-interface PatternComponent : Layout {
+fun interface PatternComponent : Layout {
 
     override fun writeTo(builder: StringBuilder, event: LogEvent)
 }
