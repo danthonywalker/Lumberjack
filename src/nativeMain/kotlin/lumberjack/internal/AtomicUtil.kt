@@ -18,34 +18,36 @@ package lumberjack.internal
 
 import kotlin.native.concurrent.AtomicReference
 import kotlin.native.concurrent.freeze
-import kotlin.native.concurrent.isFrozen
+
+internal inline fun <T> AtomicReference<T>.update(block: (T) -> T) {
+    while (true) { // Effective blocks the thread until a CAS is successful
+        val current = value
+        val update = block(current).freeze()
+
+        if (compareAndSet(current, update)) {
+            break
+        }
+    }
+}
+
+internal inline fun <T> AtomicReference<T>.getAndUpdate(block: (T) -> T): T {
+    while (true) { // Effectively blocks the thread until a CAS is successful
+        val current = value
+        val update = block(current).freeze()
+
+        if (compareAndSet(current, update)) {
+            return current
+        }
+    }
+}
 
 internal inline fun <T> AtomicReference<T>.updateAndGet(block: (T) -> T): T {
     while (true) { // Effectively blocks the thread until a CAS is successful
         val current = value
-        val update = block(current)
-
-        if (!update.isFrozen) {
-            update.freeze()
-        }
+        val update = block(current).freeze()
 
         if (compareAndSet(current, update)) {
             return update
         }
     }
-}
-
-internal inline fun <K, V> AtomicReference<Map<K, V>>.getOrPut(key: K, value: () -> V): V {
-    var cachedPair: Pair<K, V>? = null // Cache helps reduce allocations during contentions
-
-    val localMap = updateAndGet {
-        if (key in it) {
-            return@updateAndGet it
-        }
-
-        cachedPair = cachedPair ?: (key to value())
-        it + cachedPair!!
-    }
-
-    return localMap[key] ?: error(key.toString())
 }

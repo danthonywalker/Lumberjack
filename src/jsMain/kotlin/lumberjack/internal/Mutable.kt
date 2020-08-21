@@ -14,7 +14,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.sawtooth.appender
+package lumberjack.internal
 
-internal actual val RegexCompositeAppender.Factory.DEFAULT_APPENDER: Appender
-    get() = ConsoleAppender.DEFAULT
+internal actual class Mutable<T> actual constructor(initialValue: T) {
+
+    actual var value: T = initialValue
+
+    override fun equals(other: Any?): Boolean {
+        return (other as? Mutable<*>)?.value == value
+    }
+
+    override fun hashCode(): Int = value.hashCode()
+
+    override fun toString(): String = value.toString()
+}

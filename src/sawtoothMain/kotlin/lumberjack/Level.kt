@@ -16,8 +16,7 @@
  */
 package lumberjack
 
-import lumberjack.internal.getOrPut
-import kotlin.native.concurrent.AtomicReference
+import lumberjack.internal.ConcurrentMap
 
 actual sealed class Level(
 
@@ -28,13 +27,13 @@ actual sealed class Level(
 
     final override fun compareTo(other: Level): Int = value.compareTo(other.value)
 
-    override fun toString(): String = name
-
     final override fun equals(other: Any?): Boolean {
         return (other as? Level)?.name == name
     }
 
     final override fun hashCode(): Int = name.hashCode()
+
+    final override fun toString(): String = name
 
     actual object None : Level("OFF", 0)
 
@@ -56,12 +55,12 @@ actual sealed class Level(
 
     actual companion object Factory {
 
-        private val levels = AtomicReference(emptyMap<String, Level>())
+        private val levels = ConcurrentMap<String, Level>()
 
-        actual fun fromName(name: String, defaultLevel: Level): Level = (levels.value[name] ?: defaultLevel)
+        actual fun fromName(name: String, defaultLevel: Level): Level = (levels[name] ?: defaultLevel)
 
         actual fun toLevel(name: String, value: Int): Level {
-            return levels.getOrPut(name) {
+            return levels.getOrUpdate(name) {
                 when (name) {
                     None.name -> None
                     Fatal.name -> Fatal

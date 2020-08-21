@@ -14,7 +14,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.sawtooth.appender
+package lumberjack.internal
 
-internal actual val RegexCompositeAppender.Factory.DEFAULT_APPENDER: Appender
-    get() = ConsoleAppender.DEFAULT
+internal actual class ConcurrentMap<K, V> private constructor(
+
+    private val delegate: MutableMap<K, V>
+) : MutableMap<K, V> by delegate {
+
+    actual constructor() : this(HashMap())
+
+    actual inline fun getOrUpdate(key: K, value: () -> V): V = delegate.getOrPut(key, value)
+
+    override fun equals(other: Any?): Boolean = (delegate == other)
+
+    override fun hashCode(): Int = delegate.hashCode()
+
+    override fun toString(): String = delegate.toString()
+}

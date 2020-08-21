@@ -14,7 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.sawtooth.appender
+package lumberjack.internal
 
-internal actual val RegexCompositeAppender.Factory.DEFAULT_APPENDER: Appender
-    get() = ConsoleAppender.DEFAULT
+internal expect class Mutable<T>(initialValue: T) {
+
+    var value: T
+}

@@ -16,13 +16,12 @@
  */
 package lumberjack
 
-import lumberjack.internal.getOrPut
+import lumberjack.internal.ConcurrentMap
+import lumberjack.internal.Mutable
+import lumberjack.internal.name
 import lumberjack.message.Message
 import lumberjack.sawtooth.Configuration
 import kotlin.coroutines.CoroutineContext
-import kotlin.native.concurrent.AtomicReference
-import kotlin.native.concurrent.freeze
-import kotlin.native.concurrent.isFrozen
 import kotlin.reflect.KClass
 
 actual class Logger private constructor(
@@ -54,28 +53,28 @@ actual class Logger private constructor(
         }
     }
 
-    override fun toString(): String = name
-
     override fun equals(other: Any?): Boolean {
         return (other as? Logger)?.name == name
     }
 
     override fun hashCode(): Int = name.hashCode()
 
+    override fun toString(): String = name
+
     actual companion object Factory {
 
         @Suppress("ObjectPropertyName")
-        private val _configuration = AtomicReference(Configuration.DEFAULT)
+        private val _configuration = Mutable(Configuration.DEFAULT)
 
-        private val loggers = AtomicReference(emptyMap<String, Logger>())
+        private val loggers = ConcurrentMap<String, Logger>()
 
         var configuration: Configuration
             get() = _configuration.value
-            set(value) = value.run { _configuration.value = if (isFrozen) this else freeze() }
+            set(value) = value.run { _configuration.value = this }
 
         actual fun fromName(name: String): Logger =
-            loggers.getOrPut(name) { Logger(name) }
+            loggers.getOrUpdate(name) { Logger(name) }
 
-        actual fun fromKClass(kClass: KClass<*>): Logger = fromName(kClass.qualifiedName!!)
+        actual fun fromKClass(kClass: KClass<*>): Logger = fromName(kClass.name)
     }
 }

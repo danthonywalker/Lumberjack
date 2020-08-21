@@ -67,24 +67,13 @@ kotlin {
     linuxArm32Hfp()             // Linux
     linuxMips32()               // Linux
     linuxMipsel32()             // Linux
-    val linuxX64 = linuxX64()   // Linux
-    val macosX64 = macosX64()   // MacOS
-    val mingwX64 = mingwX64()   // Windows
+    linuxX64()                  // Linux
+    macosX64()                  // MacOS
+    mingwX64()                  // Windows
     mingwX86()                  // Windows
     val wasm32 = wasm32()       // WebAssembly
 
-    if (ideaActive) {
-        val target = when {
-            "Linux" in osName -> linuxX64
-            "Mac" in osName -> macosX64
-            "Windows" in osName -> mingwX64
-            else -> TODO(osName)
-        }
-
-        @Suppress("ReplaceNotNullAssertionWithElvisReturn")
-        targetFromPreset(target.preset!!, "native")
-
-    } else { // Running CI environment
+    if (!ideaActive) {
         val publishingTargets = when {
             "Linux" in osName -> {
                 val universalTargets = setOf(jvm, js, wasm32)

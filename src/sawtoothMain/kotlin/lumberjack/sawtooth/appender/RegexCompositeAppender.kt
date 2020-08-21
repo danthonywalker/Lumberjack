@@ -16,18 +16,45 @@
  */
 package lumberjack.sawtooth.appender
 
-expect class RegexCompositeAppender : Appender {
+import lumberjack.Logger
+import lumberjack.internal.ConcurrentMap
+import lumberjack.sawtooth.event.LogEvent
+
+class RegexCompositeAppender private constructor(
+
+    private val defaultAppender: Appender,
+
+    private val regexAppenders: List<RegexAppender>
+) : Appender {
+
+    private val cache = ConcurrentMap<Logger, Appender>()
+
+    override fun append(event: LogEvent) {
+        val logger = event.logger
+
+        cache.getOrUpdate(logger) {
+            regexAppenders.firstOrNull { it.regex.matches(logger.name) }?.appender ?: defaultAppender
+        }.append(event)
+    }
+
+    override fun toString(): String {
+        return "RegexCompositeAppender(" +
+            "defaultAppender=$defaultAppender" +
+            ", regexAppenders=$regexAppenders" +
+            ")"
+    }
 
     companion object Factory {
 
-        internal val DEFAULT_APPENDER: Appender
-
-        val DEFAULT: RegexCompositeAppender
+        val DEFAULT: RegexCompositeAppender = configure()
 
         fun configure(
             defaultAppender: Appender = DEFAULT_APPENDER,
             regexAppenders: List<RegexAppender> = emptyList()
-        ): RegexCompositeAppender
+        ): RegexCompositeAppender = RegexCompositeAppender(
+            defaultAppender = defaultAppender,
+            regexAppenders = regexAppenders
+        )
     }
 }
 
@@ -35,3 +62,5 @@ fun RegexCompositeAppender.Factory.configure(
     defaultAppender: Appender = DEFAULT_APPENDER,
     vararg regexAppenders: RegexAppender
 ): RegexCompositeAppender = configure(defaultAppender, listOf(*regexAppenders))
+
+internal expect val RegexCompositeAppender.Factory.DEFAULT_APPENDER: Appender

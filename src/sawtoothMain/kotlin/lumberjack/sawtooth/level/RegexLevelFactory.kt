@@ -17,17 +17,40 @@
 package lumberjack.sawtooth.level
 
 import lumberjack.Level
+import lumberjack.Logger
+import lumberjack.internal.ConcurrentMap
 
-expect class RegexLevelFactory : LevelFactory {
+class RegexLevelFactory private constructor(
+
+    private val defaultLevel: Level,
+
+    private val regexLevels: List<RegexLevel>
+) : LevelFactory {
+
+    private val cache = ConcurrentMap<Logger, Level>()
+
+    override fun fromLogger(logger: Logger): Level = cache.getOrUpdate(logger) {
+        regexLevels.firstOrNull { it.regex.matches(logger.name) }?.level ?: defaultLevel
+    }
+
+    override fun toString(): String {
+        return "RegexLevelFactory(" +
+            "defaultLevel=$defaultLevel" +
+            ", regexLevels=$regexLevels" +
+            ")"
+    }
 
     companion object Factory {
 
-        val DEFAULT: RegexLevelFactory
+        val DEFAULT: RegexLevelFactory = configure()
 
         fun configure(
             defaultLevel: Level = Level.Debug,
             regexLevels: List<RegexLevel> = emptyList()
-        ): RegexLevelFactory
+        ): RegexLevelFactory = RegexLevelFactory(
+            defaultLevel = defaultLevel,
+            regexLevels = regexLevels
+        )
     }
 }
 

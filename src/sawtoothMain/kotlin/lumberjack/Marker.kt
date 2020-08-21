@@ -16,8 +16,7 @@
  */
 package lumberjack
 
-import lumberjack.internal.getOrPut
-import kotlin.native.concurrent.AtomicReference
+import lumberjack.internal.ConcurrentMap
 
 actual class Marker private constructor(
 
@@ -26,19 +25,19 @@ actual class Marker private constructor(
     actual val parents: Map<String, Marker>
 ) {
 
-    override fun toString(): String = name
-
     override fun equals(other: Any?): Boolean {
         return (other as? Marker)?.name == name
     }
 
     override fun hashCode(): Int = name.hashCode()
 
+    override fun toString(): String = name
+
     actual companion object Factory {
 
-        private val markers = AtomicReference(emptyMap<String, Marker>())
+        private val markers = ConcurrentMap<String, Marker>()
 
         actual fun fromName(name: String, parents: Set<Marker>): Marker =
-            markers.getOrPut(name) { Marker(name, parents.associateBy(Marker::name)) }
+            markers.getOrUpdate(name) { Marker(name, parents.associateBy(Marker::name)) }
     }
 }

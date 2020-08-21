@@ -28,9 +28,7 @@ actual class MDC private constructor(
 
     override fun toString(): String = context.toString()
 
-    override fun equals(other: Any?): Boolean {
-        return (other as? MDC)?.context == context
-    }
+    override fun equals(other: Any?): Boolean = (context == other)
 
     override fun hashCode(): Int = context.hashCode()
 
