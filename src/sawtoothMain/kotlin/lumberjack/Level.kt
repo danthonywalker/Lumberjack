@@ -57,21 +57,24 @@ actual sealed class Level(
 
         private val levels = ConcurrentMap<String, Level>()
 
-        actual fun fromName(name: String, defaultLevel: Level): Level = (levels[name] ?: defaultLevel)
+        actual fun fromName(name: String, defaultLevel: Level): Level {
+            return fromName(name) ?: levels[name] ?: defaultLevel
+        }
 
-        actual fun toLevel(name: String, value: Int): Level {
-            return levels.getOrUpdate(name) {
-                when (name) {
-                    None.name -> None
-                    Fatal.name -> Fatal
-                    Error.name -> Error
-                    Warn.name -> Warn
-                    Info.name -> Info
-                    Debug.name -> Debug
-                    Trace.name -> Trace
-                    All.name -> All
-                    else -> Custom(name, value)
-                }
+        actual fun toLevel(name: String, value: Int): Level =
+            levels.getOrUpdate(name) { fromName(name) ?: Custom(name, value) }
+
+        private fun fromName(name: String): Level? {
+            return when (name) {
+                None.name -> None
+                Fatal.name -> Fatal
+                Error.name -> Error
+                Warn.name -> Warn
+                Info.name -> Info
+                Debug.name -> Debug
+                Trace.name -> Trace
+                All.name -> All
+                else -> null
             }
         }
     }

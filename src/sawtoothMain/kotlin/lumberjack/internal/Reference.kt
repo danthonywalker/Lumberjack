@@ -14,11 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.message
+package lumberjack.internal
 
-interface MutableStringMessage : StringMessage {
+internal expect class Reference<T>(initialValue: T) {
 
-    override var message: String
+    var value: T
 }
-
-fun <T : MutableStringMessage> T.message(message: String): T = apply { this.message = message }

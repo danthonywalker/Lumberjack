@@ -14,27 +14,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.message
+package lumberjack.internal
 
-import org.apache.logging.log4j.message.ReusableSimpleMessage
+internal actual class Reference<T> actual constructor(initialValue: T) {
 
-actual object ThreadLocalMutableStringMessage : MutableStringMessage {
+    actual var value: T = initialValue
 
-    @Suppress("ObjectPropertyName")
-    private val _log4JMessage = ThreadLocal.withInitial {
-        val log4JMessage = ReusableSimpleMessage()
-        log4JMessage.set("")
-        log4JMessage
+    override fun equals(other: Any?): Boolean {
+        return (other is Reference<*>) && (other.value == value)
     }
 
-    override val log4JMessage: Log4JMessage
-        get() = _log4JMessage.get()
+    override fun hashCode(): Int = value.hashCode()
 
-    override var message: String
-        get() = _log4JMessage.get().formattedMessage
-        set(value) = _log4JMessage.get().set(value)
-
-    override fun writeTo(builder: StringBuilder): Unit = _log4JMessage.get().formatTo(builder)
-
-    override fun toString(): String = message
+    override fun toString(): String = value.toString()
 }

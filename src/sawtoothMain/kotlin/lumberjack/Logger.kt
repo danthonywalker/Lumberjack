@@ -17,7 +17,7 @@
 package lumberjack
 
 import lumberjack.internal.ConcurrentMap
-import lumberjack.internal.Mutable
+import lumberjack.internal.Reference
 import lumberjack.internal.name
 import lumberjack.message.Message
 import lumberjack.sawtooth.Configuration
@@ -64,7 +64,7 @@ actual class Logger private constructor(
     actual companion object Factory {
 
         @Suppress("ObjectPropertyName")
-        private val _configuration = Mutable(Configuration.DEFAULT)
+        private val _configuration = Reference(Configuration.DEFAULT)
 
         private val loggers = ConcurrentMap<String, Logger>()
 

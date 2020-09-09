@@ -23,7 +23,7 @@ internal actual class ConcurrentMap<K, V> private constructor(
 
     actual constructor() : this(HashMap())
 
-    actual inline fun getOrUpdate(key: K, value: () -> V): V = delegate.getOrPut(key, value)
+    actual inline fun getOrUpdate(key: K, value: () -> V): V = getOrPut(key, value)
 
     override fun equals(other: Any?): Boolean = (delegate == other)
 

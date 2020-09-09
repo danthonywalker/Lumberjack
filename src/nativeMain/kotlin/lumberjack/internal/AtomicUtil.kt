@@ -20,12 +20,12 @@ import kotlin.native.concurrent.AtomicReference
 import kotlin.native.concurrent.freeze
 
 internal inline fun <T> AtomicReference<T>.update(block: (T) -> T) {
-    while (true) { // Effective blocks the thread until a CAS is successful
+    while (true) { // Effectively blocks the thread until a CAS is successful
         val current = value
         val update = block(current).freeze()
 
         if (compareAndSet(current, update)) {
-            break
+            return
         }
     }
 }

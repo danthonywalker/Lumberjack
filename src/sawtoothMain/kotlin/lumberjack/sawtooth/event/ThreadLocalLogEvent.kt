@@ -20,7 +20,7 @@ import lumberjack.Level
 import lumberjack.Logger
 import lumberjack.Marker
 import lumberjack.message.Message
-import lumberjack.message.ThreadLocalMutableStringMessage
+import lumberjack.message.ThreadLocalMutableObjectMessage
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.native.concurrent.ThreadLocal
@@ -32,7 +32,7 @@ internal object ThreadLocalLogEvent : LogEvent {
 
     override var level: Level = Level.None
 
-    override var message: Message = ThreadLocalMutableStringMessage
+    override var message: Message = ThreadLocalMutableObjectMessage
 
     override var marker: Marker? = null
 

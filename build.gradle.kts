@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter
 plugins {
     kotlin("multiplatform") version "1.4.0"
 
-    id("com.github.ben-manes.versions") version "0.29.0"
+    id("com.github.ben-manes.versions") version "0.30.0"
 
     id("maven-publish")
     id("com.jfrog.bintray") version "1.8.5"
@@ -35,7 +35,7 @@ repositories {
 
 group = "dev.neontech.lumberjack"
 val artifact: String = name.toLowerCase()
-version = "0.5.0"
+version = "0.6.0"
 
 fun KotlinDependencyHandler.kotlinx(simpleModuleName: String, version: String? = null): String =
     "org.jetbrains.kotlinx:kotlinx-$simpleModuleName${if (version == null) "" else ":$version"}"
@@ -227,7 +227,7 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = "6.6"
+        gradleVersion = "6.6.1"
         distributionType = Wrapper.DistributionType.ALL
     }
 }

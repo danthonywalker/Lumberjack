@@ -16,9 +16,21 @@
  */
 package lumberjack.message
 
-interface StringMessage : Message {
+import org.apache.logging.log4j.message.ReusableObjectMessage
 
-    val message: String
+actual object ThreadLocalMutableObjectMessage : MutableObjectMessage {
 
-    override fun writeTo(builder: StringBuilder): Unit = builder.append(message).run {}
+    @Suppress("ObjectPropertyName")
+    private val _log4JMessage = ThreadLocal.withInitial(::ReusableObjectMessage)
+
+    override val log4JMessage: Log4JMessage
+        get() = _log4JMessage.get()
+
+    override var message: Any?
+        get() = _log4JMessage.get().parameter
+        set(value) = _log4JMessage.get().set(value)
+
+    override fun writeTo(builder: StringBuilder): Unit = _log4JMessage.get().formatTo(builder)
+
+    override fun toString(): String = message.toString()
 }

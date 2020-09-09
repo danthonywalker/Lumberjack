@@ -16,4 +16,12 @@
  */
 package lumberjack.message
 
-expect object ThreadLocalMutableStringMessage : MutableStringMessage
+import kotlin.native.concurrent.ThreadLocal
+
+@ThreadLocal
+actual object ThreadLocalMutableObjectMessage : MutableObjectMessage {
+
+    override var message: Any? = null
+
+    override fun toString(): String = message.toString()
+}

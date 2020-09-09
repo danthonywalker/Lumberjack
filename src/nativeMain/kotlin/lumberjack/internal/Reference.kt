@@ -16,7 +16,22 @@
  */
 package lumberjack.internal
 
-internal expect class Mutable<T>(initialValue: T) {
+import kotlin.native.concurrent.AtomicReference
+import kotlin.native.concurrent.freeze
 
-    var value: T
+internal actual class Reference<T> actual constructor(initialValue: T) {
+
+    private val _value = AtomicReference(initialValue.freeze())
+
+    actual var value: T
+        get() = _value.value
+        set(value) = value.run { _value.value = freeze() }
+
+    override fun equals(other: Any?): Boolean {
+        return (other is Reference<*>) && (other.value == value)
+    }
+
+    override fun hashCode(): Int = value.hashCode()
+
+    override fun toString(): String = value.toString()
 }

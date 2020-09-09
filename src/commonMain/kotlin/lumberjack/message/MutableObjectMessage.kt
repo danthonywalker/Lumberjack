@@ -16,12 +16,9 @@
  */
 package lumberjack.message
 
-import kotlin.native.concurrent.ThreadLocal
+interface MutableObjectMessage : ObjectMessage {
 
-@ThreadLocal
-actual object ThreadLocalMutableStringMessage : MutableStringMessage {
-
-    override var message: String = ""
-
-    override fun toString(): String = message
+    override var message: Any?
 }
+
+fun <T : MutableObjectMessage> T.message(message: Any?): T = apply { this.message = message }

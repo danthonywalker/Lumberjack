@@ -48,7 +48,7 @@ internal actual class ConcurrentMap<K, V> actual constructor() : MutableMap<K, V
         var cachedPair: Pair<K, V>? = null
 
         return delegate.getAndUpdate {
-            if (it[key] == value) {
+            if ((key in it) && (it[key] == value)) {
                 return@getAndUpdate it
             }
 

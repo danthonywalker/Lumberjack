@@ -19,7 +19,7 @@
 package lumberjack
 
 import lumberjack.message.Message
-import lumberjack.message.ThreadLocalMutableStringMessage
+import lumberjack.message.ThreadLocalMutableObjectMessage
 import lumberjack.message.message
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -57,8 +57,8 @@ inline fun Logger.logc(
     message: () -> Any?
 ) {
     if ((level > Level.None) && (this.level >= level)) {
-        val rawMessage = message() // ThreadLocalMutableStringMessage provides most efficient generic type conversion
-        val typedMessage = (rawMessage as? Message) ?: ThreadLocalMutableStringMessage.message(rawMessage.toString())
+        val rawMessage = message() // ThreadLocalMutableObjectMessage is most efficient for generic object
+        val typedMessage = (rawMessage as? Message) ?: ThreadLocalMutableObjectMessage.message(rawMessage)
         logc(level, typedMessage, marker, cause, context)
     }
 }

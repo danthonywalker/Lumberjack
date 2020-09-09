@@ -14,24 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.internal
+package lumberjack.message
 
-import kotlin.native.concurrent.AtomicReference
-import kotlin.native.concurrent.freeze
+interface ObjectMessage : Message {
 
-internal actual class Mutable<T> actual constructor(initialValue: T) {
+    val message: Any?
 
-    private val _value = AtomicReference(initialValue.freeze())
-
-    actual var value: T
-        get() = _value.value
-        set(value) = value.run { _value.value = freeze() }
-
-    override fun equals(other: Any?): Boolean {
-        return (other as? Mutable<*>)?.value == value
-    }
-
-    override fun hashCode(): Int = value.hashCode()
-
-    override fun toString(): String = value.toString()
+    override fun writeTo(builder: StringBuilder): Unit = builder.append(message).run {}
 }
