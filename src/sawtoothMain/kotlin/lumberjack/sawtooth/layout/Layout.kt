@@ -18,7 +18,7 @@ package lumberjack.sawtooth.layout
 
 import lumberjack.sawtooth.event.LogEvent
 
-interface Layout {
+fun interface Layout {
 
     fun writeTo(builder: StringBuilder, event: LogEvent)
 }

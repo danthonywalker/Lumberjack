@@ -14,12 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.sawtooth.level
+package lumberjack.sawtooth.layout.pattern
 
-import lumberjack.Level
-import lumberjack.Logger
+fun interface PatternComponentFactory {
 
-fun interface LevelFactory {
-
-    fun fromLogger(logger: Logger): Level
+    fun fromToken(token: String, modifiers: List<String>): PatternComponent?
 }

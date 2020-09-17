@@ -18,7 +18,7 @@ package lumberjack.sawtooth.appender
 
 import lumberjack.sawtooth.event.LogEvent
 
-interface Appender {
+fun interface Appender {
 
     fun append(event: LogEvent)
 }

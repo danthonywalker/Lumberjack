@@ -14,12 +14,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.sawtooth.level
+package lumberjack.sawtooth.layout.pattern
 
-import lumberjack.Level
-import lumberjack.Logger
+import lumberjack.sawtooth.event.LogEvent
 
-fun interface LevelFactory {
+class MarkerComponent private constructor() : PatternComponent {
 
-    fun fromLogger(logger: Logger): Level
+    override fun writeTo(builder: StringBuilder, event: LogEvent) {
+        event.marker?.name?.run(builder::append)
+    }
+
+    companion object Factory {
+
+        fun withModifiers(modifiers: List<String> = emptyList()): MarkerComponent {
+            require(modifiers.isEmpty()) { "Illegal Modifiers: $modifiers" }
+            return MarkerComponent()
+        }
+    }
 }

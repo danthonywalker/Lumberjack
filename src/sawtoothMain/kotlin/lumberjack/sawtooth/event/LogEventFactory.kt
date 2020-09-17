@@ -22,7 +22,7 @@ import lumberjack.Marker
 import lumberjack.message.Message
 import kotlin.coroutines.CoroutineContext
 
-interface LogEventFactory {
+fun interface LogEventFactory {
 
     fun fromLogging(
         logger: Logger,

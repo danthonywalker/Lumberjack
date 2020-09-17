@@ -14,12 +14,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.sawtooth.level
+package lumberjack.sawtooth.layout.pattern
 
-import lumberjack.Level
-import lumberjack.Logger
+import lumberjack.sawtooth.event.LogEvent
 
-fun interface LevelFactory {
+internal data class LiteralComponent(
 
-    fun fromLogger(logger: Logger): Level
+    private val literal: String
+) : PatternComponent {
+
+    override fun writeTo(builder: StringBuilder, event: LogEvent) {
+        builder.append(literal)
+    }
 }
