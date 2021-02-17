@@ -19,6 +19,8 @@ package lumberjack.sawtooth
 import lumberjack.sawtooth.appender.Appender
 import lumberjack.sawtooth.appender.RegexCompositeAppender
 import lumberjack.sawtooth.event.LogEventFactory
+import lumberjack.sawtooth.event.LogProperty
+import lumberjack.sawtooth.event.PropertyKey
 import lumberjack.sawtooth.event.ThreadLocalLogEventFactory
 import lumberjack.sawtooth.level.LevelFactory
 import lumberjack.sawtooth.level.RegexLevelFactory
@@ -48,3 +50,9 @@ data class Configuration private constructor(
         )
     }
 }
+
+inline fun <T> withProperties(properties: Iterable<LogProperty<*>>, block: (properties: Set<LogProperty<*>>, keys: Set<PropertyKey<*>>) -> T): T =
+    block(properties.toSet(), properties.mapTo(LinkedHashSet(), LogProperty<*>::key))
+
+inline fun <T> withProperties(vararg properties: LogProperty<*>, block: (properties: Set<LogProperty<*>>, keys: Set<PropertyKey<*>>) -> T): T =
+    block(properties.toSet(), properties.mapTo(LinkedHashSet(properties.size), LogProperty<*>::key))

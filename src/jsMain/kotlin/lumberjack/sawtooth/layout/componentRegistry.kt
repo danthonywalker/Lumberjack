@@ -14,18 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Lumberjack.  If not, see <https://www.gnu.org/licenses/>.
  */
-package lumberjack.sawtooth.event
+package lumberjack.sawtooth.layout
 
-interface LogProperty<T : Any> {
+import lumberjack.sawtooth.component.*
 
-    companion object Factory {
-        inline fun <reified T : Any> fromName(name: String, crossinline block: (LogEvent) -> T?): LogProperty<T> = object : LogProperty<T> {
-            override val key: PropertyKey<T> = PropertyKey(name, T::class)
-            override fun value(event: LogEvent): T? = block(event)
-        }
-    }
+internal var _componentRegistry: Map<String, PatternComponentInitialiser> = PatternLayout.defaultComponentRegistry
 
-    val key: PropertyKey<T>
-
-    fun value(event: LogEvent): T?
-}
+public actual var PatternLayout.Factory.componentRegistry: Map<String, PatternComponentInitialiser>
+    get() = _componentRegistry
+    set(value) = value.run { _componentRegistry = this }
